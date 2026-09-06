@@ -1,0 +1,62 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b0b12;
+  --fg: #e9e9f2;
+  --muted: #9a9ab0;
+  --accent: #6c5ce7;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.page {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.page h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.page p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.page a {
+  color: var(--accent);
+}
+
+.milestone-badge {
+  align-self: flex-start;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--accent) !important;
+}

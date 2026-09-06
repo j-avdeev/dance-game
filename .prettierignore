@@ -1,0 +1,10 @@
+dist/
+dist-types/
+dist-types-node/
+dev-dist/
+node_modules/
+coverage/
+playwright-report/
+test-results/
+pnpm-lock.yaml
+content/demo/*.json

@@ -1,0 +1,39 @@
+node_modules/
+dist/
+dist-types/
+dist-types-node/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+
+# Vite / PWA generated output
+apps/web/dev-dist/
+apps/web/public/sw.js
+apps/web/public/workbox-*.js
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Local certificates (dev HTTPS)
+*.pem
+certs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*

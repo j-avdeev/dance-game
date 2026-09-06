@@ -8,19 +8,67 @@ The desktop browser plays a reference choreography and scores the player's pose,
 
 ## Project status
 
-Planning / initial implementation.
+**M0 complete**: workspace scaffold, dev HTTPS, PWA foundation and CI. No pose tracking, scoring or networking yet.
 
-Start with [`PLAN.md`](./PLAN.md). Codex should also read [`AGENTS.md`](./AGENTS.md) before making changes.
+Start with [`PLAN.md`](./PLAN.md). Coding agents should also read [`AGENTS.md`](./AGENTS.md) before making changes.
 
-## Intended stack
+## Requirements
 
-- TypeScript
-- pnpm workspace
-- React + Vite
-- MediaPipe Tasks Vision
-- Node.js WebSocket relay for the MVP
-- Vitest
-- Playwright
+- Node.js 22 or newer
+- pnpm 11 or newer
+
+## Local development
+
+```bash
+pnpm install
+pnpm dev            # web on https://localhost:5173, relay on http://localhost:8080
+pnpm dev --host     # also expose on the LAN, so a phone can reach it
+```
+
+The dev server serves **HTTPS** because `getUserMedia` requires a secure context; a phone opening a plain `http://<lan-ip>:5173` gets no camera at all. The certificate is self-signed, so the phone shows a warning once, which you accept manually.
+
+On iOS, where self-signed certificates are painful, run a tunnel instead and disable dev HTTPS:
+
+```bash
+DANCE_GAME_DEV_HTTPS=false pnpm dev --host
+cloudflared tunnel --url http://localhost:5173
+```
+
+Then set `VITE_PUBLIC_WEB_URL` to the tunnel address so the pairing QR code points somewhere the phone can reach. See [`.env.example`](./.env.example).
+
+## Validation
+
+```bash
+pnpm lint        # eslint + prettier
+pnpm typecheck   # tsc across all workspace projects
+pnpm test        # vitest unit tests
+pnpm build       # production build of every package and app
+pnpm test:e2e    # playwright, against the built app
+```
+
+Playwright needs its browser once: `pnpm exec playwright install chromium`.
+
+MediaPipe never runs in CI. End-to-end tests cover routing and the PWA manifest, and pose-dependent tests will use the mock pose provider.
+
+## Layout
+
+```text
+apps/web/         React + Vite client (host, player, controller, extractor)
+apps/realtime/    Node WebSocket relay and signaling server
+packages/core/    framework-free pose, scoring and protocol logic
+content/demo/     self-recorded reference video and choreography JSON
+e2e/              Playwright specs
+```
+
+## Routes
+
+| Route                 | Purpose                           | Milestone |
+| --------------------- | --------------------------------- | --------- |
+| `/`                   | Desktop host: room, QR, gameplay  | M5        |
+| `/play`               | Single-device game (prototype P1) | M4        |
+| `/controller/:roomId` | Phone controller, paired          | M5        |
+| `/controller/debug`   | Pose development without pairing  | M1        |
+| `/tools/choreography` | Choreography extractor            | M2        |
 
 ## MVP principle
 
