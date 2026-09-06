@@ -60,6 +60,12 @@ Create the pnpm TypeScript monorepo with:
 
 Configure strict TypeScript, Vitest, ESLint/formatting, workspace scripts, and minimal CI.
 
+Set up local HTTPS so a real phone can use the camera from M1 onward (see "Local development and deployment" in `PLAN.md`):
+
+- dev HTTPS for the web app (`@vitejs/plugin-basic-ssl` or mkcert) and `wss://` for the realtime dev server;
+- `PUBLIC_WEB_URL` / `PUBLIC_WS_URL` configuration, defaulting to the current origin;
+- `pnpm dev --host` reachable from a phone on the same LAN.
+
 Also establish the minimal PWA foundation described in M0 using `vite-plugin-pwa`:
 
 - valid web app manifest;

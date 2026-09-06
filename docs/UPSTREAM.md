@@ -138,7 +138,7 @@ The distinctive project logic should remain ours:
 ## Milestone reference map
 
 - **M0**: React/Vite/TypeScript; add basic optional PWA manifest/installability with `vite-plugin-pwa`.
-- **M1**: current MediaPipe Tasks Vision docs/examples first; Pose Animator only for rendering/loop ideas.
+- **M1**: current MediaPipe Tasks Vision docs/examples first; Pose Animator only for rendering/loop ideas; MDN Screen Wake Lock API (https://developer.mozilla.org/docs/Web/API/Screen_Wake_Lock_API) for keeping the phone awake while tracking.
 - **M2**: MediaPipe VIDEO-mode patterns for deterministic choreography extraction.
 - **M3**: project-owned scoring engine; no upstream scoring dependency.
 - **M4**: project-owned gameplay loop; Pose Animator may inform visualization only.
