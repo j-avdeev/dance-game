@@ -8,7 +8,7 @@ The desktop browser plays a reference choreography and scores the player's pose,
 
 ## Project status
 
-**M2 complete**: workspace scaffold, dev HTTPS, PWA foundation, CI, phone camera pose tracking at `/controller/debug`, and the choreography extractor at `/tools/choreography`. No scoring or networking yet.
+**M3 complete**: workspace scaffold, dev HTTPS, PWA foundation, CI, phone camera pose tracking at `/controller/debug`, the choreography extractor at `/tools/choreography`, and the scoring engine in `packages/core`. No gameplay UI or networking yet.
 
 Start with [`PLAN.md`](./PLAN.md). Coding agents should also read [`AGENTS.md`](./AGENTS.md) before making changes.
 
@@ -90,6 +90,16 @@ grid. Play the video back afterwards: the green skeleton must track the dancer.
 A demo dance is committed at `content/demo/`: a 44 s portrait clip and its extracted
 timeline, 443 samples at 10 Hz with the dancer detected in every one. See
 [`content/demo/README.md`](./content/demo/README.md) to replace it.
+
+## Scoring
+
+The scoring engine lives in `packages/core` and is pure and deterministic. See
+[`docs/scoring.md`](./docs/scoring.md) for how a performance becomes a number and why the
+model is built the way it is.
+
+The engine is validated against the committed demo choreography, not only synthetic poses:
+a correct performance averages 100 with no misses, while dancing the wrong moves or
+standing still both score below 60.
 
 ## MVP principle
 

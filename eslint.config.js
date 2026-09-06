@@ -39,6 +39,11 @@ export default tseslint.config(
     rules: { "no-console": "off" },
   },
   {
+    // E2E specs and the manual demo generator report progress on stdout.
+    files: ["e2e/**/*.ts"],
+    rules: { "no-console": "off" },
+  },
+  {
     // Build scripts run in Node and report progress on stdout.
     files: ["**/scripts/**/*.js", "*.config.js", "*.config.ts"],
     languageOptions: {

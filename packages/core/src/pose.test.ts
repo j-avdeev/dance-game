@@ -67,19 +67,50 @@ describe("toAspectCorrectedLandmarks", () => {
 });
 
 describe("mirrorLandmarks", () => {
-  it("swaps semantic left and right, not coordinates", () => {
+  it("reflects coordinates and swaps left/right meaning together", () => {
+    // Both halves are required. Swapping indices alone leaves the body inside
+    // out, which silently wrecked every angle feature until it was caught by
+    // scoring a flawless performance at 50 out of 100.
     const landmarks = fullBody({
       [PoseLandmarkIndex.leftWrist]: landmark(0.1, 0.2),
       [PoseLandmarkIndex.rightWrist]: landmark(0.9, 0.8),
     });
     const mirrored = mirrorLandmarks(landmarks);
-    expect(mirrored[PoseLandmarkIndex.leftWrist]).toEqual(landmark(0.9, 0.8));
-    expect(mirrored[PoseLandmarkIndex.rightWrist]).toEqual(landmark(0.1, 0.2));
+
+    // The wrist that was on the left of the frame is now on the right, and it
+    // is now called the right wrist.
+    expect(mirrored[PoseLandmarkIndex.rightWrist]?.x).toBeCloseTo(0.9, 6);
+    expect(mirrored[PoseLandmarkIndex.rightWrist]?.y).toBeCloseTo(0.2, 6);
+    expect(mirrored[PoseLandmarkIndex.leftWrist]?.x).toBeCloseTo(0.1, 6);
+    expect(mirrored[PoseLandmarkIndex.leftWrist]?.y).toBeCloseTo(0.8, 6);
   });
 
-  it("leaves centre-line landmarks alone", () => {
-    const landmarks = fullBody({ [PoseLandmarkIndex.nose]: landmark(0.5, 0.1) });
-    expect(mirrorLandmarks(landmarks)[PoseLandmarkIndex.nose]).toEqual(landmark(0.5, 0.1));
+  it("preserves body geometry, so a mirrored pose is still the same shape", () => {
+    const landmarks = fullBody({
+      [PoseLandmarkIndex.leftShoulder]: landmark(0.4, 0.3),
+      [PoseLandmarkIndex.rightShoulder]: landmark(0.6, 0.3),
+      [PoseLandmarkIndex.leftWrist]: landmark(0.2, 0.6),
+    });
+    const mirrored = mirrorLandmarks(landmarks);
+
+    // Shoulder width is unchanged by a reflection.
+    const width = (a: Landmark[], i: number, j: number) => Math.abs(a[i]!.x - a[j]!.x);
+    expect(
+      width(mirrored, PoseLandmarkIndex.leftShoulder, PoseLandmarkIndex.rightShoulder),
+    ).toBeCloseTo(
+      width(landmarks, PoseLandmarkIndex.leftShoulder, PoseLandmarkIndex.rightShoulder),
+      6,
+    );
+  });
+
+  it("keeps centre-line landmarks on the centre line", () => {
+    const landmarks = fullBody({
+      [PoseLandmarkIndex.leftWrist]: landmark(0.2, 0.5),
+      [PoseLandmarkIndex.rightWrist]: landmark(0.8, 0.5),
+      [PoseLandmarkIndex.nose]: landmark(0.5, 0.1),
+    });
+    // The reflection axis is the pose's own midpoint, which here is x = 0.5.
+    expect(mirrorLandmarks(landmarks)[PoseLandmarkIndex.nose]?.x).toBeCloseTo(0.5, 6);
   });
 
   it("is its own inverse", () => {
@@ -87,7 +118,15 @@ describe("mirrorLandmarks", () => {
       [PoseLandmarkIndex.leftAnkle]: landmark(0.2, 0.95),
       [PoseLandmarkIndex.rightAnkle]: landmark(0.8, 0.93),
     });
-    expect(mirrorLandmarks(mirrorLandmarks(landmarks))).toEqual(landmarks);
+    const restored = mirrorLandmarks(mirrorLandmarks(landmarks));
+    restored.forEach((value, index) => {
+      expect(value.x).toBeCloseTo(landmarks[index]!.x, 6);
+      expect(value.y).toBeCloseTo(landmarks[index]!.y, 6);
+    });
+  });
+
+  it("returns an empty array for an empty pose", () => {
+    expect(mirrorLandmarks([])).toEqual([]);
   });
 });
 

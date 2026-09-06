@@ -42,16 +42,45 @@ export function toNormalizedLandmarks(
 }
 
 /**
- * Swaps semantic left/right landmarks.
+ * Reflects a pose, as seen in a mirror.
  *
- * Mirror mode must swap meaning, not flip coordinates: a flip would keep
- * calling the dancer's right arm "left" and score the wrong limb.
+ * Two operations are required and neither alone is correct:
+ *
+ * 1. reflect x about the body's own centre, so the geometry is actually
+ *    mirrored;
+ * 2. swap semantic left/right indices, so the reflected right arm is called
+ *    the right arm.
+ *
+ * Swapping indices alone leaves the body inside out: the left shoulder ends up
+ * on the right of the frame, and every angle and orientation feature is wrong.
+ * Reflecting alone keeps calling the dancer's right arm "left", so the scorer
+ * compares the wrong limbs.
+ *
+ * The reflection is about the pose's own horizontal midpoint rather than the
+ * frame centre, so it does not depend on where the dancer stands.
  */
 export function mirrorLandmarks(landmarks: readonly Landmark[]): Landmark[] {
-  const mirrored = landmarks.slice();
+  if (landmarks.length === 0) {
+    return [];
+  }
+
+  let minX = Number.POSITIVE_INFINITY;
+  let maxX = Number.NEGATIVE_INFINITY;
+  for (const landmark of landmarks) {
+    minX = Math.min(minX, landmark.x);
+    maxX = Math.max(maxX, landmark.x);
+  }
+  const axis = (minX + maxX) / 2;
+
+  const reflected = landmarks.map((landmark) => ({
+    ...landmark,
+    x: 2 * axis - landmark.x,
+  }));
+
+  const mirrored = reflected.slice();
   for (const [a, b] of MIRROR_LANDMARK_PAIRS) {
-    const first = landmarks[a];
-    const second = landmarks[b];
+    const first = reflected[a];
+    const second = reflected[b];
     if (first !== undefined && second !== undefined) {
       mirrored[a] = second;
       mirrored[b] = first;

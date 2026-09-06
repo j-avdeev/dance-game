@@ -5,3 +5,6 @@ export * from "./landmarks.js";
 export * from "./framing.js";
 export * from "./pose.js";
 export * from "./choreography.js";
+export * from "./features.js";
+export * from "./scoring.js";
+export * from "./grading.js";
