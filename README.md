@@ -8,7 +8,7 @@ The desktop browser plays a reference choreography and scores the player's pose,
 
 ## Project status
 
-**M1 complete**: workspace scaffold, dev HTTPS, PWA foundation, CI, and phone camera pose tracking at `/controller/debug`. No choreography, scoring or networking yet.
+**M2 complete**: workspace scaffold, dev HTTPS, PWA foundation, CI, phone camera pose tracking at `/controller/debug`, and the choreography extractor at `/tools/choreography`. No scoring or networking yet.
 
 Start with [`PLAN.md`](./PLAN.md). Coding agents should also read [`AGENTS.md`](./AGENTS.md) before making changes.
 
@@ -68,7 +68,7 @@ e2e/              Playwright specs
 | `/play`               | Single-device game (prototype P1) | M4        |
 | `/controller/:roomId` | Phone controller, paired          | M5        |
 | `/controller/debug`   | Pose development without pairing  | done      |
-| `/tools/choreography` | Choreography extractor            | M2        |
+| `/tools/choreography` | Choreography extractor            | done      |
 
 Append `?mock=1` to `/controller/debug` to run the deterministic mock pose provider instead of MediaPipe. It needs no camera, no model download and no GPU, which is how the end-to-end tests exercise the page.
 
@@ -80,6 +80,15 @@ Append `?mock=1` to `/controller/debug` to run the deterministic mock pose provi
 4. The framing badge turns green once your whole body is visible, from head to feet.
 
 The pose model is about 6 MB and downloads on first use. The MediaPipe wasm runtime is served from this app rather than a CDN: `pnpm dev` and `pnpm build` copy it into `apps/web/public/mediapipe/`, which is generated and gitignored.
+
+## Making a choreography
+
+Open `/tools/choreography`, select a self-recorded video, and extract a reference pose
+timeline. Sampling is seek-based, so timestamps are exact and a re-run reproduces the same
+grid. Play the video back afterwards: the green skeleton must track the dancer.
+
+The demo dance still has to be recorded. See [`content/demo/README.md`](./content/demo/README.md)
+for what to record and how to export it.
 
 ## MVP principle
 

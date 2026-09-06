@@ -159,3 +159,68 @@ button:disabled {
   font-size: 1.05rem;
   font-variant-numeric: tabular-nums;
 }
+
+/* Choreography extractor */
+
+.page--wide {
+  max-width: 56rem;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.9rem;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 0.5rem;
+}
+
+.field-grid:disabled {
+  opacity: 0.6;
+}
+
+.field-grid legend {
+  padding: 0 0.4rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.field-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.field-grid input[type="text"],
+.field-grid input[type="number"],
+.field-grid input:not([type]) {
+  padding: 0.45rem 0.55rem;
+  font: inherit;
+  color: var(--fg);
+  background: rgb(255 255 255 / 6%);
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: 0.35rem;
+}
+
+.field-grid__checkbox {
+  grid-column: 1 / -1;
+  flex-direction: row !important;
+  align-items: flex-start;
+  gap: 0.5rem;
+  line-height: 1.4;
+}
+
+.field-grid__checkbox input {
+  margin-top: 0.15rem;
+}
+
+input[type="file"] {
+  align-self: flex-start;
+  color: var(--muted);
+  font: inherit;
+}
