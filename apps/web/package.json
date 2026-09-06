@@ -4,12 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --build && vite build",
-    "preview": "vite preview"
+    "dev": "pnpm run copy-mediapipe && vite",
+    "build": "pnpm run copy-mediapipe && tsc --build && vite build",
+    "preview": "vite preview",
+    "copy-mediapipe": "node scripts/copy-mediapipe-assets.js"
   },
   "dependencies": {
     "@dance-game/core": "workspace:*",
+    "@mediapipe/tasks-vision": "^1.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5"

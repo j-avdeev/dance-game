@@ -8,7 +8,7 @@ The desktop browser plays a reference choreography and scores the player's pose,
 
 ## Project status
 
-**M0 complete**: workspace scaffold, dev HTTPS, PWA foundation and CI. No pose tracking, scoring or networking yet.
+**M1 complete**: workspace scaffold, dev HTTPS, PWA foundation, CI, and phone camera pose tracking at `/controller/debug`. No choreography, scoring or networking yet.
 
 Start with [`PLAN.md`](./PLAN.md). Coding agents should also read [`AGENTS.md`](./AGENTS.md) before making changes.
 
@@ -67,8 +67,19 @@ e2e/              Playwright specs
 | `/`                   | Desktop host: room, QR, gameplay  | M5        |
 | `/play`               | Single-device game (prototype P1) | M4        |
 | `/controller/:roomId` | Phone controller, paired          | M5        |
-| `/controller/debug`   | Pose development without pairing  | M1        |
+| `/controller/debug`   | Pose development without pairing  | done      |
 | `/tools/choreography` | Choreography extractor            | M2        |
+
+Append `?mock=1` to `/controller/debug` to run the deterministic mock pose provider instead of MediaPipe. It needs no camera, no model download and no GPU, which is how the end-to-end tests exercise the page.
+
+## Testing pose tracking on a phone
+
+1. Run `pnpm dev --host` and note the `https://<lan-ip>:5173` address.
+2. Open `https://<lan-ip>:5173/controller/debug` on the phone and accept the certificate warning once.
+3. Allow camera access, then prop the phone 2-3 m away at roughly waist height.
+4. The framing badge turns green once your whole body is visible, from head to feet.
+
+The pose model is about 6 MB and downloads on first use. The MediaPipe wasm runtime is served from this app rather than a CDN: `pnpm dev` and `pnpm build` copy it into `apps/web/public/mediapipe/`, which is generated and gitignored.
 
 ## MVP principle
 

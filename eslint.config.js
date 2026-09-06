@@ -8,6 +8,8 @@ export default tseslint.config(
       "**/dist/**",
       "**/dist-types/**",
       "**/dist-types-node/**",
+      // Vendored MediaPipe wasm runtime, copied in at build time.
+      "**/public/mediapipe/**",
       "**/dev-dist/**",
       "**/node_modules/**",
       "**/coverage/**",
@@ -34,6 +36,14 @@ export default tseslint.config(
   {
     // The realtime server legitimately logs to stdout.
     files: ["apps/realtime/**/*.ts"],
+    rules: { "no-console": "off" },
+  },
+  {
+    // Build scripts run in Node and report progress on stdout.
+    files: ["**/scripts/**/*.js", "*.config.js", "*.config.ts"],
+    languageOptions: {
+      globals: { console: "readonly", process: "readonly" },
+    },
     rules: { "no-console": "off" },
   },
   prettier,

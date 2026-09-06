@@ -60,3 +60,102 @@ body {
   font-size: 0.8rem;
   color: var(--accent) !important;
 }
+
+/* Controller debug view */
+
+button {
+  align-self: flex-start;
+  padding: 0.6rem 1.1rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--fg);
+  background: var(--accent);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.alert {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 6%);
+  color: var(--fg) !important;
+}
+
+.alert--error {
+  background: rgb(255 92 92 / 15%);
+  color: #ffb4b4 !important;
+}
+
+.preview {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  border-radius: 0.75rem;
+}
+
+.preview__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.framing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.8rem;
+  border-left: 3px solid var(--muted);
+  border-radius: 0.25rem;
+  background: rgb(255 255 255 / 4%);
+  font-size: 0.9rem;
+}
+
+.framing span {
+  color: var(--muted);
+}
+
+.framing--ok {
+  border-left-color: #2ecc71;
+}
+
+.framing--waiting {
+  border-left-color: #f1c40f;
+}
+
+.framing--lost,
+.framing--no-person {
+  border-left-color: #e74c3c;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.stats > div {
+  padding: 0.5rem 0.7rem;
+  background: rgb(255 255 255 / 4%);
+  border-radius: 0.5rem;
+}
+
+.stats dt {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stats dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}

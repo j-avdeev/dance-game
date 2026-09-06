@@ -22,7 +22,11 @@ export default defineConfig(({ command, isPreview }) => {
       // Choreography and video assets are NOT precached yet; see PLAN.md.
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
-        globIgnores: ["**/content/**"],
+        // The MediaPipe wasm runtime is ~35 MB and choreography/video assets
+        // are large too; precaching either would make installing the PWA
+        // enormous. They load over the network on demand instead.
+        globIgnores: ["**/content/**", "**/mediapipe/**"],
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
       manifest: {
         name: "Dance Game",
