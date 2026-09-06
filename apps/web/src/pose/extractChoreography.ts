@@ -59,6 +59,19 @@ export class ExtractionAbortedError extends Error {
   }
 }
 
+/**
+ * Stored coordinate precision.
+ *
+ * Full float precision triples the file size for digits that sit far below the
+ * pose model's own noise. 4 decimals matches what the wire protocol sends.
+ */
+const STORED_DECIMALS = 4;
+
+function round(value: number): number {
+  const factor = 10 ** STORED_DECIMALS;
+  return Math.round(value * factor) / factor;
+}
+
 function toLandmark(source: NormalizedLandmark): Landmark {
   return {
     x: source.x,
@@ -66,6 +79,16 @@ function toLandmark(source: NormalizedLandmark): Landmark {
     z: source.z,
     visibility: typeof source.visibility === "number" ? source.visibility : 1,
   };
+}
+
+/** Rounds for storage. Must run after aspect correction, not before it. */
+function roundLandmarks(landmarks: readonly Landmark[]): Landmark[] {
+  return landmarks.map((landmark) => ({
+    x: round(landmark.x),
+    y: round(landmark.y),
+    z: round(landmark.z),
+    visibility: round(landmark.visibility),
+  }));
 }
 
 export async function extractChoreography(options: ExtractionOptions): Promise<Choreography> {
@@ -151,12 +174,12 @@ export async function extractChoreography(options: ExtractionOptions): Promise<C
       } else {
         frames.push({
           tMs,
-          landmarks: toAspectCorrectedLandmarks(
-            rawLandmarks.map(toLandmark),
-            imageWidth,
-            imageHeight,
+          landmarks: roundLandmarks(
+            toAspectCorrectedLandmarks(rawLandmarks.map(toLandmark), imageWidth, imageHeight),
           ),
-          ...(rawWorldLandmarks ? { worldLandmarks: rawWorldLandmarks.map(toLandmark) } : {}),
+          ...(rawWorldLandmarks
+            ? { worldLandmarks: roundLandmarks(rawWorldLandmarks.map(toLandmark)) }
+            : {}),
         });
       }
 

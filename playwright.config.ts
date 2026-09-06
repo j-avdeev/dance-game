@@ -6,6 +6,9 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./e2e",
+  // The demo generator is a manual, minutes-long tool run, not a test of the
+  // app. Run it explicitly: pnpm exec playwright test e2e/extract-demo.spec.ts
+  testIgnore: ["**/extract-demo.spec.ts"],
   fullyParallel: true,
   forbidOnly: !!process.env["CI"],
   retries: process.env["CI"] ? 2 : 0,

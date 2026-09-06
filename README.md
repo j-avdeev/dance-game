@@ -87,8 +87,9 @@ Open `/tools/choreography`, select a self-recorded video, and extract a referenc
 timeline. Sampling is seek-based, so timestamps are exact and a re-run reproduces the same
 grid. Play the video back afterwards: the green skeleton must track the dancer.
 
-The demo dance still has to be recorded. See [`content/demo/README.md`](./content/demo/README.md)
-for what to record and how to export it.
+A demo dance is committed at `content/demo/`: a 44 s portrait clip and its extracted
+timeline, 443 samples at 10 Hz with the dancer detected in every one. See
+[`content/demo/README.md`](./content/demo/README.md) to replace it.
 
 ## MVP principle
 
