@@ -6,8 +6,9 @@ test("host page renders", async ({ page }) => {
 });
 
 test("play route is reachable", async ({ page }) => {
+  // Gameplay itself is covered in play.spec.ts; this only guards routing.
   await page.goto("/play");
-  await expect(page.getByRole("heading", { name: "Play" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Dance", exact: true })).toBeVisible();
 });
 
 test("web app manifest is served and valid", async ({ request }) => {

@@ -6,7 +6,7 @@ import { DEFAULT_SCORING_CONFIG } from "./config.js";
 import type { TimedLandmarks } from "./features.js";
 import { aggregateGradeEvents, buildScoringWindows, summarizePerformance } from "./grading.js";
 import { mirrorLandmarks } from "./pose.js";
-import { scoreSample } from "./scoring.js";
+import { measureTimingOffsetMs, scoreSample } from "./scoring.js";
 import type { Choreography } from "./types.js";
 
 /**
@@ -123,6 +123,38 @@ describe("scoring the demo choreography", () => {
     const base = playThrough(correctPlayer());
     const moved = playThrough(shifted);
     expect(Math.abs(base.averageScore - moved.averageScore)).toBeLessThan(2);
+  });
+
+  it("recovers the player's true lag, independently of the configured one", () => {
+    // M4 has to check expectedLagMs against reality. The scored offset cannot
+    // do that: it is pulled towards the configured value by design, so it
+    // would only echo the assumption back. This measurement ignores the
+    // timing penalty and so is free to disagree.
+    for (const trueLagMs of [0, 200, 400]) {
+      const playerHistory = correctPlayer(trueLagMs);
+      const measured: number[] = [];
+
+      // Sampled across the middle of the routine, away from the ends where
+      // the search window runs off the timeline.
+      for (let index = 50; index < demo.frames.length - 50; index += 5) {
+        const frame = demo.frames[index]!;
+        const offset = measureTimingOffsetMs({
+          referenceLandmarks: frame.landmarks,
+          referenceHistory,
+          referenceTMs: frame.tMs,
+          playerHistory,
+          mirrored: demo.mirrored,
+          config: { ...DEFAULT_SCORING_CONFIG, timingWindowMs: 500 },
+        });
+        if (offset !== undefined) {
+          measured.push(offset);
+        }
+      }
+
+      measured.sort((a, b) => a - b);
+      const median = measured[Math.floor(measured.length / 2)]!;
+      expect(Math.abs(median - trueLagMs)).toBeLessThanOrEqual(100);
+    }
   });
 
   it("survives dropouts where the player left the frame", () => {

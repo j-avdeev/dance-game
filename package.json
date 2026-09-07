@@ -16,7 +16,8 @@
     "test:e2e": "playwright test",
     "typecheck": "tsc --build --force",
     "lint": "eslint . && prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "deploy": "pnpm build && pnpm exec wrangler pages deploy apps/web/dist --project-name=dance-game"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

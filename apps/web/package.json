@@ -4,10 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm run copy-mediapipe && vite",
-    "build": "pnpm run copy-mediapipe && tsc --build && vite build",
+    "dev": "pnpm run copy-assets && vite",
+    "build": "pnpm run copy-assets && tsc --build && vite build",
     "preview": "vite preview",
-    "copy-mediapipe": "node scripts/copy-mediapipe-assets.js"
+    "copy-mediapipe": "node scripts/copy-mediapipe-assets.js",
+    "copy-content": "node scripts/copy-demo-content.js",
+    "copy-assets": "pnpm run copy-mediapipe && pnpm run copy-content"
   },
   "dependencies": {
     "@dance-game/core": "workspace:*",

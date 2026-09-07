@@ -8,7 +8,7 @@ The desktop browser plays a reference choreography and scores the player's pose,
 
 ## Project status
 
-**M3 complete**: workspace scaffold, dev HTTPS, PWA foundation, CI, phone camera pose tracking at `/controller/debug`, the choreography extractor at `/tools/choreography`, and the scoring engine in `packages/core`. No gameplay UI or networking yet.
+**M4 complete**: the game is playable at `/play` on a single device with a camera. Phone/desktop pairing (M5) is next.
 
 Start with [`PLAN.md`](./PLAN.md). Coding agents should also read [`AGENTS.md`](./AGENTS.md) before making changes.
 
@@ -65,7 +65,7 @@ e2e/              Playwright specs
 | Route                 | Purpose                           | Milestone |
 | --------------------- | --------------------------------- | --------- |
 | `/`                   | Desktop host: room, QR, gameplay  | M5        |
-| `/play`               | Single-device game (prototype P1) | M4        |
+| `/play`               | Single-device game (prototype P1) | done      |
 | `/controller/:roomId` | Phone controller, paired          | M5        |
 | `/controller/debug`   | Pose development without pairing  | done      |
 | `/tools/choreography` | Choreography extractor            | done      |
@@ -90,6 +90,22 @@ grid. Play the video back afterwards: the green skeleton must track the dancer.
 A demo dance is committed at `content/demo/`: a 44 s portrait clip and its extracted
 timeline, 443 samples at 10 Hz with the dancer detected in every one. See
 [`content/demo/README.md`](./content/demo/README.md) to replace it.
+
+## Playing it
+
+```bash
+pnpm dev
+```
+
+Open `https://localhost:5173/play`, allow the camera, stand back so your whole body is in
+frame, and press Start.
+
+| Query flag | Effect                                                          |
+| ---------- | --------------------------------------------------------------- |
+| `?mock=1`  | Synthetic poses instead of the camera; no model or GPU needed   |
+| `?debug=1` | Tuning panel: measured lag, calibration slider, copyable report |
+
+[`docs/TESTING.md`](./docs/TESTING.md) is the kit to hand to a tester.
 
 ## Scoring
 

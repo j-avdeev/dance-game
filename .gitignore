@@ -9,6 +9,7 @@ coverage/
 # Vite / PWA generated output
 apps/web/dev-dist/
 apps/web/public/mediapipe/
+apps/web/public/content/
 apps/web/public/sw.js
 apps/web/public/workbox-*.js
 

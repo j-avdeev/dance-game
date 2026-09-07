@@ -9,3 +9,4 @@ test-results/
 pnpm-lock.yaml
 content/demo/*.json
 apps/web/public/mediapipe/
+apps/web/public/content/

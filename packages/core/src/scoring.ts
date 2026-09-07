@@ -229,6 +229,30 @@ export function timingPenalty(
   return gaussianSimilarity(Math.abs(deviation), sigma);
 }
 
+/**
+ * Best-matching offset ignoring the timing penalty, in ms.
+ *
+ * The normal score deliberately prefers candidates near `expectedLagMs`, so
+ * its reported offset clusters around whatever lag is configured and cannot be
+ * used to check that value. This search weighs pose similarity alone, so the
+ * answer is independent of the assumption being tested.
+ *
+ * Returns undefined when no candidate could be scored. Accuracy depends on the
+ * dance actually changing within the window: for slow movement several
+ * candidates look alike and the estimate is correspondingly vague.
+ */
+export function measureTimingOffsetMs(input: SampleScoreInput): number | undefined {
+  const config = input.config ?? DEFAULT_SCORING_CONFIG;
+  const flattened: ScoringConfig = {
+    ...config,
+    // Wide enough to be flat across the search window.
+    earlySigmaMs: 1e6,
+    lateSigmaMs: 1e6,
+  };
+  const result = scoreSample({ ...input, config: flattened });
+  return result.total > 0 ? result.timingOffsetMs : undefined;
+}
+
 export type SampleScoreInput = {
   /** Reference pose for this sample. */
   referenceLandmarks: readonly Landmark[];
