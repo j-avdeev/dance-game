@@ -1,4 +1,4 @@
-import type { GradeEvent, ScoreParts } from "@dance-game/core";
+import { MEASUREMENT_WINDOW_MS, type GradeEvent, type ScoreParts } from "@dance-game/core";
 import type { ScoredSample } from "@dance-game/core";
 
 /**
@@ -61,6 +61,21 @@ export function medianTimingOffsetMs(lags: readonly number[]): number {
   return sorted.length % 2 === 0 ? (sorted[middle - 1]! + sorted[middle]!) / 2 : sorted[middle]!;
 }
 
+/**
+ * Fraction of measurements sitting in the outermost bucket.
+ *
+ * A pile-up at the edge means the search could not look far enough and
+ * returned its own boundary, so the median is a floor rather than a value.
+ * Reporting this stops a censored number being read as a measurement.
+ */
+export function edgePileUpRatio(lags: readonly number[]): number {
+  if (lags.length === 0) {
+    return 0;
+  }
+  const limit = MEASUREMENT_WINDOW_MS - 50;
+  return lags.filter((lag) => Math.abs(lag) >= limit).length / lags.length;
+}
+
 function averageParts(samples: readonly ScoredSample[]): ScoreParts {
   const totals: ScoreParts = {
     leftArm: 0,
@@ -106,6 +121,13 @@ export function buildDebugReport(input: DebugReportInput): string {
     `lag histogram: ${buildLagHistogram(measuredLags)
       .map((bucket) => `${bucket.bucketMs}:${bucket.count}`)
       .join(" ")}`,
+    ...(edgePileUpRatio(measuredLags) > 0.2
+      ? [
+          `WARNING: ${(edgePileUpRatio(measuredLags) * 100).toFixed(0)}% of measurements sit at the search limit ` +
+            `(${MEASUREMENT_WINDOW_MS} ms). The median is a floor, not a measurement. ` +
+            `Tracking was probably failing, or the player was far out of time.`,
+        ]
+      : []),
     "",
     "per-part averages:",
     ...(Object.keys(parts) as (keyof ScoreParts)[]).map(

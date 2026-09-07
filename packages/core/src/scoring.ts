@@ -248,10 +248,25 @@ export function measureTimingOffsetMs(input: SampleScoreInput): number | undefin
     // Wide enough to be flat across the search window.
     earlySigmaMs: 1e6,
     lateSigmaMs: 1e6,
+    // Search far wider than the game scores over. Reusing the scoring window
+    // censors the result: a player lagging more than `timingWindowMs` has
+    // every sample reported at the window edge, so the measurement silently
+    // returns the boundary instead of the truth. A real session showed 55% of
+    // samples piled up at exactly 400 ms for this reason.
+    timingWindowMs: MEASUREMENT_WINDOW_MS,
   };
   const result = scoreSample({ ...input, config: flattened });
   return result.total > 0 ? result.timingOffsetMs : undefined;
 }
+
+/**
+ * Half-width of the lag measurement search, in ms.
+ *
+ * Generous on purpose: this is a diagnostic, not the scoring path, and a
+ * measurement that cannot exceed its own window cannot detect that the
+ * configured lag is too small.
+ */
+export const MEASUREMENT_WINDOW_MS = 1200;
 
 export type SampleScoreInput = {
   /** Reference pose for this sample. */

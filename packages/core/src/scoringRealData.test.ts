@@ -130,7 +130,10 @@ describe("scoring the demo choreography", () => {
     // do that: it is pulled towards the configured value by design, so it
     // would only echo the assumption back. This measurement ignores the
     // timing penalty and so is free to disagree.
-    for (const trueLagMs of [0, 200, 400]) {
+    // 600 and 800 exceed the scoring window deliberately: a real session
+    // reported 55% of samples at exactly 400 ms, the old window edge, because
+    // the measurement inherited the scoring window and could not look past it.
+    for (const trueLagMs of [0, 200, 400, 600, 800]) {
       const playerHistory = correctPlayer(trueLagMs);
       const measured: number[] = [];
 
@@ -144,7 +147,7 @@ describe("scoring the demo choreography", () => {
           referenceTMs: frame.tMs,
           playerHistory,
           mirrored: demo.mirrored,
-          config: { ...DEFAULT_SCORING_CONFIG, timingWindowMs: 500 },
+          config: DEFAULT_SCORING_CONFIG,
         });
         if (offset !== undefined) {
           measured.push(offset);

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { ScoredSample } from "@dance-game/core";
 import {
   buildDebugReport,
+  edgePileUpRatio,
   buildLagHistogram,
   meanTimingOffsetMs,
   medianTimingOffsetMs,
@@ -76,6 +77,23 @@ describe("buildLagHistogram", () => {
   });
 });
 
+describe("edgePileUpRatio", () => {
+  it("detects measurements stacked at the search limit", () => {
+    // The failure mode seen in a real session: the search could not look far
+    // enough, so it returned its own boundary and the median read as a value.
+    const lags = [200, 300, 1200, 1200, 1200];
+    expect(edgePileUpRatio(lags)).toBeCloseTo(0.6, 6);
+  });
+
+  it("is zero for a well-spread distribution", () => {
+    expect(edgePileUpRatio([100, 200, 300, 400])).toBe(0);
+  });
+
+  it("is zero for no measurements", () => {
+    expect(edgePileUpRatio([])).toBe(0);
+  });
+});
+
 describe("buildDebugReport", () => {
   const input = {
     choreographyId: "demo",
@@ -104,6 +122,19 @@ describe("buildDebugReport", () => {
     const report = buildDebugReport(input);
     expect(report).toContain("per-part averages:");
     expect(report).toContain("leftArm: 80.0");
+  });
+
+  it("warns when the measurement is censored rather than measured", () => {
+    const report = buildDebugReport({
+      ...input,
+      measuredLags: [1200, 1200, 1200, 200],
+    });
+    expect(report).toContain("WARNING");
+    expect(report).toContain("floor, not a measurement");
+  });
+
+  it("stays quiet when the distribution is healthy", () => {
+    expect(buildDebugReport(input)).not.toContain("WARNING");
   });
 
   it("does not throw when nothing was scored", () => {
