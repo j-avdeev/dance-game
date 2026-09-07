@@ -31,8 +31,37 @@ jobs:
       # installs its own copy on demand. In a pnpm workspace that install is
       # rejected: adding to the root needs an explicit flag the action does
       # not pass, so the deploy failed before it started.
+      # Fails with a readable message rather than a wrangler stack trace when
+      # the secrets are missing, which is easy to do: Actions secrets are
+      # separate from Codespaces and Dependabot secrets in the same settings
+      # page.
+      - name: Check deploy credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          missing=0
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN is not set."
+            missing=1
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::CLOUDFLARE_ACCOUNT_ID is not set."
+            missing=1
+          fi
+          if [ "$missing" = "1" ]; then
+            echo "::error::Add them under Settings > Secrets and variables > Actions > Repository secrets."
+            exit 1
+          fi
+          echo "Both deploy secrets are present."
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
+        env:
+          # Passed as env too: wrangler reads these directly, and relying on
+          # the action's inputs alone left the token unset in the CLI.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
