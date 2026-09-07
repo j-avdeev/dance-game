@@ -31,8 +31,10 @@ import { ScoringDebugPanel } from "../components/ScoringDebugPanel.js";
 
 const CHOREOGRAPHY_URL = "/content/demo/choreography.json";
 const VIDEO_URL = "/content/demo/demo.mp4";
-const CAMERA_WIDTH = 240;
-const CAMERA_HEIGHT = 427;
+// Picture-in-picture inset. Small enough to leave the dancer visible, big
+// enough to check your own framing at a glance.
+const CAMERA_WIDTH = 108;
+const CAMERA_HEIGHT = 192;
 
 export function PlayPage() {
   const [searchParams] = useSearchParams();
@@ -179,26 +181,27 @@ export function PlayPage() {
               liveScore={game.liveScore}
             />
           ) : null}
+
+          <div className="stage__camera">
+            <div className="preview" style={{ width: CAMERA_WIDTH, height: CAMERA_HEIGHT }}>
+              <CameraPreview
+                videoRef={cameraVideoRef}
+                stream={camera.stream}
+                width={CAMERA_WIDTH}
+                height={CAMERA_HEIGHT}
+              />
+              <SkeletonOverlay
+                frameRef={pose.frameRef}
+                width={CAMERA_WIDTH}
+                height={CAMERA_HEIGHT}
+                mirrored
+                className="preview__overlay"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="stage__camera">
-          <div className="preview" style={{ width: CAMERA_WIDTH, height: CAMERA_HEIGHT }}>
-            <CameraPreview
-              videoRef={cameraVideoRef}
-              stream={camera.stream}
-              width={CAMERA_WIDTH}
-              height={CAMERA_HEIGHT}
-            />
-            <SkeletonOverlay
-              frameRef={pose.frameRef}
-              width={CAMERA_WIDTH}
-              height={CAMERA_HEIGHT}
-              mirrored
-              className="preview__overlay"
-            />
-          </div>
-          <FramingStatusBadge framing={pose.framing} />
-        </div>
+        <FramingStatusBadge framing={pose.framing} />
       </div>
 
       <div className="controls">

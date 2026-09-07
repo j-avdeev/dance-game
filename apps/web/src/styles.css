@@ -229,32 +229,84 @@ input[type="file"] {
 
 .stage {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .stage__video {
   position: relative;
-  flex: 1 1 20rem;
-  min-width: 16rem;
+  align-self: center;
+  max-width: 100%;
   background: #000;
   border-radius: 0.75rem;
   overflow: hidden;
+  /* Contains the camera inset, which is positioned against this box. */
+  line-height: 0;
+  /*
+   * Room for the HUD below the video. Overlaying the last few pixels of the
+   * frame clipped the score label, and covering the dancer's feet is worse
+   * than spending the space.
+   */
+  padding-bottom: 3.1rem;
 }
 
 .stage__reference {
   display: block;
-  width: 100%;
-  max-height: 70vh;
+  max-width: 100%;
+  max-height: 72vh;
   object-fit: contain;
   background: #000;
 }
 
+/*
+ * Camera inset, top right.
+ *
+ * Sitting over the reference video rather than beside it keeps the dancer as
+ * large as possible, which matters most on a laptop screen where the two
+ * portrait videos side by side left both of them small.
+ */
 .stage__camera {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  /* Reads as a separate surface against whatever is behind it. */
+  box-shadow:
+    0 0 0 2px rgb(255 255 255 / 25%),
+    0 4px 16px rgb(0 0 0 / 45%);
+  /*
+   * The inset unavoidably sits over the dancer's head and raised arms, which
+   * are exactly the moves being copied. Fading it back keeps the reference
+   * readable; hovering brings it fully back for a framing check.
+   */
+  opacity: 0.75;
+  transition: opacity 150ms ease;
+}
+
+.stage__camera:hover,
+.stage__camera:focus-within {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage__camera {
+    transition: none;
+  }
+}
+
+.stage__camera .preview {
+  border-radius: 0;
+}
+
+/* On a narrow screen the inset would cover too much, so shrink it. */
+@media (max-width: 30rem) {
+  .stage__camera {
+    top: 0.4rem;
+    right: 0.4rem;
+    transform: scale(0.72);
+    transform-origin: top right;
+  }
 }
 
 .countdown {
@@ -273,10 +325,13 @@ input[type="file"] {
   inset: auto 0 0 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.6rem 0.9rem;
   align-items: center;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(transparent, rgb(11 11 18 / 85%));
+  padding: 0.5rem 0.85rem 0.7rem;
+  min-height: 3.1rem;
+  /* Normal line-height: the container sets 0 so the video has no gap below. */
+  line-height: 1.2;
+  background: rgb(11 11 18 / 92%);
 }
 
 .hud__score {
@@ -298,9 +353,12 @@ input[type="file"] {
 }
 
 .hud__grade {
-  padding: 0.2rem 0.7rem;
+  padding: 0.2rem 0.8rem;
   border-radius: 999px;
   font-weight: 700;
+  /* Never squeezed by the flex row, however long the score gets. */
+  flex: 0 0 auto;
+  white-space: nowrap;
   animation: grade-pop 400ms ease-out;
 }
 
@@ -345,7 +403,9 @@ input[type="file"] {
 }
 
 .hud__meter {
-  flex: 1 1 6rem;
+  /* Takes the leftover width, and gives it up first when space is tight. */
+  flex: 1 1 4rem;
+  min-width: 3rem;
   height: 0.4rem;
   background: rgb(255 255 255 / 15%);
   border-radius: 999px;
