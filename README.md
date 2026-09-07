@@ -107,6 +107,26 @@ frame, and press Start.
 
 [`docs/TESTING.md`](./docs/TESTING.md) is the kit to hand to a tester.
 
+## Deploying
+
+Pushing to `main` deploys automatically through
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which needs two repository
+secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+
+Cloudflare can also build from the repository directly, under the project's **Settings**,
+then **Builds**. If you enable that, **delete the workflow file first**, or every push
+deploys twice. The settings this repo needs are not the defaults:
+
+| Setting        | Value                                          |
+| -------------- | ---------------------------------------------- |
+| Build command  | `pnpm install --frozen-lockfile && pnpm build` |
+| Build output   | `apps/web/dist`                                |
+| Root directory | leave empty                                    |
+| `NODE_VERSION` | `22`                                           |
+
+The default output directory will not work: this is a pnpm workspace and the site is built
+inside `apps/web`.
+
 ## Scoring
 
 The scoring engine lives in `packages/core` and is pure and deterministic. See
