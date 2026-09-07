@@ -27,9 +27,15 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # wrangler is a dev dependency rather than left to the action, which
+      # installs its own copy on demand. In a pnpm workspace that install is
+      # rejected: adding to the root needs an explicit flag the action does
+      # not pass, so the deploy failed before it started.
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.129.1"
+          packageManager: pnpm
           command: pages deploy apps/web/dist --project-name=dance-game
