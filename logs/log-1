@@ -1,0 +1,22 @@
+Dance game debug report
+choreography: demo
+userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
+screen: 1646x894 @1.75x
+
+inference: 37.7 fps, 24.2 ms/frame
+samples scored: 438
+windows graded: 43
+grades: {"perfect":2,"good":28,"miss":5,"great":8}
+
+expectedLagMs (configured): 200
+latency calibration offset: 0 ms
+measured lag: mean 280 ms, median 352 ms (n=438)
+lag histogram: 0:42 100:52 200:40 300:64 400:240
+
+per-part averages:
+  leftArm: 55.9
+  rightArm: 55.5
+  leftLeg: 86.1
+  rightLeg: 84.4
+  torso: 97.9
+  motion: 55.6

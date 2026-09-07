@@ -1,0 +1,4 @@
+# Client-side routing: every unknown path serves index.html so React Router
+# can resolve it. Without this, opening /play directly returns a 404 on any
+# static host, and only in-app navigation works.
+/*    /index.html   200
