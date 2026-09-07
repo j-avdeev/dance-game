@@ -56,20 +56,22 @@ jobs:
           fi
 
           # Copying from the dashboard easily picks up a trailing space or
-          # newline, and wrangler then rejects the value with an error that
-          # masks the real cause because the ID is redacted in the log.
-          if printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qv '^[A-Za-z0-9_-]*$'; then
-            echo "::error::CLOUDFLARE_ACCOUNT_ID contains characters other than letters, digits, hyphens and underscores. It was probably copied with a space or newline. Re-add it with no surrounding whitespace."
-            exit 1
-          fi
-          echo "Both deploy secrets are present and the account ID looks well formed."
+          # newline. Strip it rather than fail on it: wrangler rejects such a
+          # value with an error that blames the ID, and since the log redacts
+          # secrets the whitespace is invisible.
+          clean_id=$(echo "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')
 
-          # Hand on whitespace-free copies, so a stray newline in a secret
-          # cannot reach wrangler.
-          {
-            printf 'account_id=%s
-' "$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"
-          } >> "$GITHUB_OUTPUT"
+          # Anything still unexpected is a genuinely wrong value, not a
+          # formatting slip, so say so plainly.
+          case "$clean_id" in
+            *[!A-Za-z0-9_-]*)
+              echo "::error::CLOUDFLARE_ACCOUNT_ID contains characters other than letters, digits, hyphens and underscores. Copy it again from the Cloudflare dashboard URL."
+              exit 1
+              ;;
+          esac
+
+          echo "Both deploy secrets are present and the account ID looks well formed."
+          echo "account_id=$clean_id" >> "$GITHUB_OUTPUT"
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
