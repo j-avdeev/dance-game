@@ -65,7 +65,12 @@ jobs:
           # formatting slip, so say so plainly.
           case "$clean_id" in
             *[!A-Za-z0-9_-]*)
-              echo "::error::CLOUDFLARE_ACCOUNT_ID contains characters other than letters, digits, hyphens and underscores. Copy it again from the Cloudflare dashboard URL."
+              # Describe the shape without printing the value, which the log
+              # would redact anyway. Length and character classes are enough
+              # to tell a wrong value from a mis-paste.
+              echo "::error::CLOUDFLARE_ACCOUNT_ID is not a valid account ID."
+              echo "::error::Length after trimming: ${#clean_id}. A Cloudflare account ID is 32 hex characters."
+              echo "::error::Copy it from the dashboard URL: dash.cloudflare.com/<account-id>/..."
               exit 1
               ;;
           esac
